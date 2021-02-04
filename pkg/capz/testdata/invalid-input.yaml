@@ -1,5 +1,5 @@
 install:
-  - skeletor:
+  - capz:
       description: "Invalid Input Test Case"
       args:
       - yarrrr

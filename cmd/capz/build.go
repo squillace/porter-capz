@@ -1,11 +1,11 @@
 package main
 
 import (
-	"get.porter.sh/mixin/skeletor/pkg/skeletor"
 	"github.com/spf13/cobra"
+	"github.com/squillace/porter-capz/pkg/capz"
 )
 
-func buildBuildCommand(m *skeletor.Mixin) *cobra.Command {
+func buildBuildCommand(m *capz.Mixin) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "build",
 		Short: "Generate Dockerfile lines for the bundle invocation image",

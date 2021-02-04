@@ -1,6 +1,8 @@
-package skeletor
+package capz
 
 import (
+	"fmt"
+
 	"get.porter.sh/porter/pkg/exec/builder"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -10,9 +12,9 @@ type BuildInput struct {
 	Config MixinConfig
 }
 
-// MixinConfig represents configuration that can be set on the skeletor mixin in porter.yaml
+// MixinConfig represents configuration that can be set on the capz mixin in porter.yaml
 // mixins:
-// - skeletor:
+// - capz:
 //	  clientVersion: "v0.0.0"
 
 type MixinConfig struct {
@@ -29,7 +31,17 @@ type MixinConfig struct {
 // 	--keyserver packages.microsoft.com \
 // 	--recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF && \
 // apt-get update && apt-get install azure-cli
-// `
+
+/*
+RUN curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v0.3.13/clusterctl-linux-amd64 -o clusterctl
+RUN chmod +x ./clusterctl
+RUN sudo mv ./clusterctl /usr/local/bin/clusterctl
+RUN clusterctl version
+
+
+*/ // `
+
+const dockerfileLines = `RUN mv ./clusterctl /usr/bin/ && chmod +x /usr/bin/clusterctl`
 
 // Build will generate the necessary Dockerfile lines
 // for an invocation image using this mixin
@@ -48,14 +60,15 @@ func (m *Mixin) Build() error {
 
 	suppliedClientVersion := input.Config.ClientVersion
 
-	if suppliedClientVersion != "" {
-		m.ClientVersion = suppliedClientVersion
+	if suppliedClientVersion != "v0.3.13" {
+		m.ClientVersion = "v0.3.13" //suppliedClientVersion
 	}
 
-	//fmt.Fprintf(m.Out, dockerfileLines)
-
+	fmt.Fprintln(m.Out, "RUN apt-get update && apt-get install curl -y")
 	// Example of pulling and defining a client version for your mixin
-	// fmt.Fprintf(m.Out, "\nRUN curl https://get.helm.sh/helm-%s-linux-amd64.tar.gz --output helm3.tar.gz", m.ClientVersion)
+	fmt.Fprintf(m.Out, "\nRUN curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/%s/clusterctl-linux-amd64 -o clusterctl\n", m.ClientVersion)
+
+	fmt.Fprintln(m.Out, dockerfileLines)
 
 	return nil
 }
